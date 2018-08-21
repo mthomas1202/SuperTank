@@ -6,15 +6,7 @@ using UnityEngine;
 // sot that it is used in a pathfinding algorithm
 class Node
 {
-    //every node may have different values
-    //according to your game/application
-    public enum Value
-    {
-        FREE,
-        BLOCKED
-    }
-
-
+ 
     //Nodes have x and y positions (horizontal & vertical)
     public int posX;
     public int posY;
@@ -28,84 +20,54 @@ class Node
     public Node parent;
 
     //value of the node
-    public Value value;
+    public NavTile value = null;
 
     //Constructor
     public Node(int posX, int posY)
     {
         this.posX = posX;
         this.posY = posY;
-
-        value = Value.FREE;
     }
 
 }
 public class AStar : MonoBehaviour
 {
+    //public variables
+    public GameObject backgroundContainer;
 
-    //Constant
-    private const int MAP_SIZE = 6;
-
-    //Variables
-    private List<string> map;
+    //private variables
+    private int mapWidth;
+    private int mapHeight;
     private Node[,] nodeMap;
     // Use this for initialization
     void Start()
     {
-        map = new List<string>();
-        map.Add("G-----");
-        map.Add("XXX-XX");
-        map.Add("S-X-X-");
-        map.Add("--X-X-");
-        map.Add("--X-X-");
-        map.Add("------");
+        //Preload values
+        mapHeight = backgroundContainer.transform.childCount;
+        mapWidth = backgroundContainer.transform.GetChild(0).childCount;
 
-        //parse the map
-        nodeMap = new Node[MAP_SIZE, MAP_SIZE];
+        //Parse the map
+        nodeMap = new Node[mapWidth, mapHeight];
         Node start = null;
         Node goal = null;
 
-        for (int y = 0; y < MAP_SIZE; y++)
+        for(int y = 0; y < mapHeight; y++)
         {
-            for (int x = 0; x < MAP_SIZE; x++)
+            Transform backgroundRow = backgroundContainer.transform.GetChild(y);
+
+            for(int x = 0; x < mapWidth; x++)
             {
+                NavTile tile = backgroundRow.GetChild(x).GetComponent<NavTile>();
+
                 Node node = new Node(x, y);
-                char currentChar = map[y][x];
-                if (currentChar == 'X')
-                {
-                    node.value = Node.Value.BLOCKED;
-                }
-                else if (currentChar == 'G')
-                {
-                    goal = node;
-                }
-                else if (currentChar == 'S')
-                {
-                    start = node;
-                }
+                node.value = tile;
                 nodeMap[x, y] = node;
             }
-
         }
+
 
         //Execute AStar algorithm
-        List<Node> nodePath = ExecuteAStar(start, goal);
-
-        //Burn the path in the map
-
-        foreach(Node node in nodePath)
-        {
-            char[] charArray = map[node.posY].ToCharArray();
-            charArray[node.posX] = '@';
-            map[node.posY] = new string(charArray);
-        }
-        //Print the map
-        string mapString = "";
-        foreach (string mapRow in map)
-        {
-            mapString += mapRow + "\n";
-        }
-        Debug.Log(mapString);
+        //List<Node> nodePath = ExecuteAStar(start, goal);
     }
     private List<Node> ExecuteAStar(Node start, Node goal)
     {
@@ -194,16 +156,16 @@ public class AStar : MonoBehaviour
         if (node.posX - 1 >= 0)
         {
             Node candidate = nodeMap[node.posX - 1, node.posY];
-            if (candidate.value != Node.Value.BLOCKED)
+            if (candidate.value != false)
             {
                 neighbors.Add(candidate);
             }
         }
 
-        if (node.posX + 1 <= MAP_SIZE - 1)
+        if (node.posX + 1 <= mapWidth - 1)
         {
             Node candidate = nodeMap[node.posX + 1, node.posY];
-            if (candidate.value != Node.Value.BLOCKED)
+            if (candidate.value != false)
             {
                 neighbors.Add(candidate);
             }
@@ -212,16 +174,16 @@ public class AStar : MonoBehaviour
         if(node.posY -1 >= 0)
         {
             Node candidate = nodeMap[node.posX, node.posY - 1];
-            if(candidate.value != Node.Value.BLOCKED)
+            if(candidate.value != false)
             {
                 neighbors.Add(candidate);
             }
         }
 
-        if(node.posY + 1 <= MAP_SIZE - 1)
+        if(node.posY + 1 <= mapHeight - 1)
         {
             Node candidate = nodeMap[node.posX, node.posY + 1];
-            if(candidate.value != Node.Value.BLOCKED)
+            if(candidate.value != false)
             {
                 neighbors.Add(candidate);
             }
