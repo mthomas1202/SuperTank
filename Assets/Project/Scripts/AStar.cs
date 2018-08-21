@@ -33,6 +33,8 @@ class Node
 public class AStar : MonoBehaviour
 {
     //public variables
+    public GameObject player;
+    public GameObject enemy;
     public GameObject backgroundContainer;
 
     //private variables
