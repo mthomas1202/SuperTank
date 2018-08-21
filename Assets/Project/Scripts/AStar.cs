@@ -67,9 +67,41 @@ public class AStar : MonoBehaviour
             }
         }
 
+        start = FindNode(player);
+        goal = FindNode(enemy);
 
+        Debug.Log("Player is on " + start.posX + ", " + start.posY);
+        Debug.Log("Enemy is on " + goal.posX + ", " + goal.posY);
         //Execute AStar algorithm
         //List<Node> nodePath = ExecuteAStar(start, goal);
+    }
+
+    //find the node the obj is on
+    private Node FindNode(GameObject obj)
+    {
+        Collider2D[] collidingObjects = Physics2D.OverlapCircleAll(obj.transform.position, 0.2f);
+        foreach (Collider2D collidingObject in collidingObjects)
+        {
+            if (collidingObject.gameObject.GetComponent<NavTile>() != null)
+            {
+                //tile obj is on
+                NavTile tile = collidingObject.gameObject.GetComponent<NavTile>();
+                //find node that contains the tile
+                for (int y = 0; y < mapHeight; y++)
+                {
+                    for (int x = 0; x < mapWidth; x++)
+                    {
+                        Node node = nodeMap[x, y];
+                        if (node.value == tile)
+                        {
+                            return node;
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
     private List<Node> ExecuteAStar(Node start, Node goal)
     {
