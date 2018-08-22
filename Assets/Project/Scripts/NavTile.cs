@@ -5,6 +5,8 @@ using UnityEngine;
 public class NavTile : MonoBehaviour {
 
     public bool navigable;
+    public bool canMoveUp, canMoveDown, canMoveLeft, canMoveRight;
+   
 	// Use this for initialization
 	void Start () {
 		

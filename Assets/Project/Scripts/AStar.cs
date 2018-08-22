@@ -4,7 +4,7 @@ using UnityEngine;
 
 //class that holds information about a certain position
 // sot that it is used in a pathfinding algorithm
-class Node
+public class Node
 {
  
     //Nodes have x and y positions (horizontal & vertical)
@@ -41,8 +41,10 @@ public class AStar : MonoBehaviour
     private int mapWidth;
     private int mapHeight;
     private Node[,] nodeMap;
+
+
     // Use this for initialization
-    void Start()
+    public List<Node> FindPath()
     {
         //Preload values
         mapHeight = backgroundContainer.transform.childCount;
@@ -69,11 +71,13 @@ public class AStar : MonoBehaviour
 
         start = FindNode(player);
         goal = FindNode(enemy);
-
-        Debug.Log("Player is on " + start.posX + ", " + start.posY);
-        Debug.Log("Enemy is on " + goal.posX + ", " + goal.posY);
+        Debug.Log(start.posX + ", " + start.posY);
+        Debug.Log(goal.posX + ", " + goal.posY);
         //Execute AStar algorithm
-        //List<Node> nodePath = ExecuteAStar(start, goal);
+        List<Node> nodePath = ExecuteAStar(start, goal);
+        nodePath.Reverse();
+
+        return nodePath;
     }
 
     //find the node the obj is on
@@ -187,37 +191,37 @@ public class AStar : MonoBehaviour
     {
         List<Node> neighbors = new List<Node>();
 
-        if (node.posX - 1 >= 0)
+        if (node.value.canMoveLeft && node.posX - 1 >= 0)
         {
             Node candidate = nodeMap[node.posX - 1, node.posY];
-            if (candidate.value != false)
+            if (candidate.value.navigable)
             {
                 neighbors.Add(candidate);
             }
         }
 
-        if (node.posX + 1 <= mapWidth - 1)
+        if (node.value.canMoveRight && node.posX + 1 <= mapWidth - 1)
         {
             Node candidate = nodeMap[node.posX + 1, node.posY];
-            if (candidate.value != false)
+            if (candidate.value.navigable)
             {
                 neighbors.Add(candidate);
             }
         }
 
-        if(node.posY -1 >= 0)
+        if(node.value.canMoveUp && node.posY -1 >= 0)
         {
             Node candidate = nodeMap[node.posX, node.posY - 1];
-            if(candidate.value != false)
+            if (candidate.value.navigable)
             {
                 neighbors.Add(candidate);
             }
         }
 
-        if(node.posY + 1 <= mapHeight - 1)
+        if(node.value.canMoveDown && node.posY + 1 <= mapHeight - 1)
         {
             Node candidate = nodeMap[node.posX, node.posY + 1];
-            if(candidate.value != false)
+            if (candidate.value.navigable)
             {
                 neighbors.Add(candidate);
             }
