@@ -1173,6 +1173,7 @@ Transform:
   - {fileID: 1544315567}
   - {fileID: 2017548227}
   - {fileID: 1597075057}
+  - {fileID: 921802633}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1189,6 +1190,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aStar: {fileID: 1832125471}
   player: {fileID: 1597075060}
+  gameDuration: 30
+  maximumSpawnInterval: 2
+  minimumSpawnInterval: 0.5
+  cratePrefab: {fileID: 1352852347314610, guid: 193f7a6f452924b40ae99d996e68d401,
+    type: 2}
+  crateContainer: {fileID: 921802632}
+  navTileContainer: {fileID: 2017548226}
 --- !u!1001 &486866363
 Prefab:
   m_ObjectHideFlags: 0
@@ -2775,6 +2783,34 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4497264540740206, guid: 27142d5eb2a965d47a4cd8899ba99807,
     type: 2}
   m_PrefabInternal: {fileID: 911814951}
+--- !u!1 &921802632
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 921802633}
+  m_Layer: 0
+  m_Name: CrateContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &921802633
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 921802632}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 476498483}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &934555563
 Prefab:
   m_ObjectHideFlags: 0

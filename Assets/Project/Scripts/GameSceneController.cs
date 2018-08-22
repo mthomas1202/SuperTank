@@ -7,14 +7,53 @@ public class GameSceneController : MonoBehaviour {
     public AStar aStar;
     public MovableObject player;
 
+    public float gameDuration = 30f;
+    public float maximumSpawnInterval = 2f;
+    public float minimumSpawnInterval = 0.5f;
+
+    public GameObject cratePrefab;
+    public GameObject crateContainer;
+    public GameObject navTileContainer;
+
+    private float gameTimer;
+    private float spawnTimer;
+    private List<NavTile> navigableTiles;
+
 	// Use this for initialization
 	void Start () {
+        spawnTimer = maximumSpawnInterval;
+
+        //Build list of navigable tiles
+        navigableTiles = new List<NavTile>();
+        foreach(NavTile tile in navTileContainer.GetComponentsInChildren<NavTile>())
+        {
+            if (tile.navigable)
+            {
+                navigableTiles.Add(tile);
+            }
+        }
        // List<Node> path = aStar.FindPath(player.gameObject, );
         //player.Move(path);
 	}
 
     void Update()
     {
+        //Game timer logic
+        gameTimer += Time.deltaTime;
+        float difficulty = Mathf.Min(gameTimer / gameDuration, 1.0f);
+
+        //Spawn Logic
+        spawnTimer -= Time.deltaTime;
+        if(spawnTimer <= 0.0f)
+        {
+            float spawnInterval = maximumSpawnInterval - (maximumSpawnInterval - minimumSpawnInterval) * difficulty;
+            spawnTimer = spawnInterval;
+
+
+            Vector3 spawnPosition = navigableTiles[Random.Range(0, navigableTiles.Count)].transform.position;
+            Instantiate(cratePrefab, spawnPosition, Quaternion.identity, crateContainer.transform);
+        }
+        //Input Logic
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 screenPosition = Input.mousePosition;
