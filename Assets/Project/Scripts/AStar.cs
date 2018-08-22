@@ -33,8 +33,6 @@ public class Node
 public class AStar : MonoBehaviour
 {
     //public variables
-    public GameObject player;
-    public GameObject enemy;
     public GameObject backgroundContainer;
 
     //private variables
@@ -44,7 +42,7 @@ public class AStar : MonoBehaviour
 
 
     // Use this for initialization
-    public List<Node> FindPath()
+    public List<Node> FindPath(GameObject obj1, GameObject obj2)
     {
         //Preload values
         mapHeight = backgroundContainer.transform.childCount;
@@ -69,10 +67,9 @@ public class AStar : MonoBehaviour
             }
         }
 
-        start = FindNode(player);
-        goal = FindNode(enemy);
-        Debug.Log(start.posX + ", " + start.posY);
-        Debug.Log(goal.posX + ", " + goal.posY);
+        start = FindNode(obj1);
+        goal = FindNode(obj2);
+        
         //Execute AStar algorithm
         List<Node> nodePath = ExecuteAStar(start, goal);
         nodePath.Reverse();

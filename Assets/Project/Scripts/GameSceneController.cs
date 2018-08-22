@@ -5,24 +5,31 @@ using UnityEngine;
 public class GameSceneController : MonoBehaviour {
 
     public AStar aStar;
-    public GameObject player;
+    public MovableObject player;
 
 	// Use this for initialization
 	void Start () {
-        List<Node> path = aStar.FindPath();
-        StartCoroutine(MoveRoutine(path));
+       // List<Node> path = aStar.FindPath(player.gameObject, );
+        //player.Move(path);
 	}
-	
-    private IEnumerator MoveRoutine(List<Node> path)
+
+    void Update()
     {
-        foreach(Node node in path)
+        if (Input.GetMouseButtonDown(0))
         {
-            player.transform.position = node.value.transform.position;
-            yield return new WaitForSeconds(0.5f);
+            Vector3 screenPosition = Input.mousePosition;
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
+            foreach(RaycastHit2D hit in hits)
+            {
+                if(hit.collider.gameObject.GetComponent<NavTile>() != null)
+                {
+                    player.Move(aStar.FindPath(player.gameObject, hit.collider.gameObject));
+                    break;
+                }
+            }
+          
         }
     }
-	// Update is called once per frame
-	void Update () {
-		
-	}
+	
 }
