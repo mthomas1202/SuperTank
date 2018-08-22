@@ -10,6 +10,7 @@ public class GameSceneController : MonoBehaviour {
     public float gameDuration = 30f;
     public float maximumSpawnInterval = 2f;
     public float minimumSpawnInterval = 0.5f;
+    public float crateLifeTime = 10f;
 
     public GameObject cratePrefab;
     public GameObject crateContainer;
@@ -18,6 +19,8 @@ public class GameSceneController : MonoBehaviour {
     private float gameTimer;
     private float spawnTimer;
     private List<NavTile> navigableTiles;
+
+    int score;
 
 	// Use this for initialization
 	void Start () {
@@ -32,8 +35,8 @@ public class GameSceneController : MonoBehaviour {
                 navigableTiles.Add(tile);
             }
         }
-       // List<Node> path = aStar.FindPath(player.gameObject, );
-        //player.Move(path);
+
+        player.GetComponent<Player>().onCollect += OnCollectCrate;
 	}
 
     void Update()
@@ -51,7 +54,9 @@ public class GameSceneController : MonoBehaviour {
 
 
             Vector3 spawnPosition = navigableTiles[Random.Range(0, navigableTiles.Count)].transform.position;
-            Instantiate(cratePrefab, spawnPosition, Quaternion.identity, crateContainer.transform);
+            GameObject crateInstance = Instantiate(cratePrefab, spawnPosition, Quaternion.identity, crateContainer.transform);
+
+            Destroy(crateInstance, crateLifeTime);
         }
         //Input Logic
         if (Input.GetMouseButtonDown(0))
@@ -64,11 +69,19 @@ public class GameSceneController : MonoBehaviour {
                 if(hit.collider.gameObject.GetComponent<NavTile>() != null)
                 {
                     player.Move(aStar.FindPath(player.gameObject, hit.collider.gameObject));
+
                     break;
                 }
             }
           
         }
     }
-	
+
+	private void OnCollectCrate(GameObject crate)
+    {
+        Destroy(crate);
+        score++;
+
+        Debug.Log("Score: " + score);
+    }
 }

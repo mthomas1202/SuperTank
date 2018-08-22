@@ -44,7 +44,8 @@ public class MovableObject : MonoBehaviour {
 
     public void Move(List<Node> path)
     {
-        //currentPath.Clear();
+        
+        currentPath.Clear();
         foreach(Node node in path)
         {
             currentPath.Add(node);
