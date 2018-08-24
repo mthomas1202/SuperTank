@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameSceneController : MonoBehaviour {
-
+    [Header("Gameplay")]
     public AStar aStar;
     public MovableObject player;
 
@@ -13,7 +14,13 @@ public class GameSceneController : MonoBehaviour {
     public float minimumSpawnInterval = 0.5f;
     public float crateLifeTime = 10f;
 
+    [Header("UI")]
+    public GameObject startGroup;
+    public GameObject gameplayGroup;
+    public GameObject gameOverGroup;
     public Text scoreText;
+    public Text gameOverText;
+    public Text timeText;
 
     public GameObject cratePrefab;
     public GameObject crateContainer;
@@ -22,6 +29,9 @@ public class GameSceneController : MonoBehaviour {
     private float gameTimer;
     private float spawnTimer;
     private List<NavTile> navigableTiles;
+    private bool isPlaying;
+    private bool isGameOver;
+
 
     int score;
 
@@ -51,43 +61,56 @@ public class GameSceneController : MonoBehaviour {
         }
 
         player.GetComponent<Player>().onCollect += OnCollectCrate;
+
+        startGroup.SetActive(true);
+        gameplayGroup.SetActive(false);
+        gameOverGroup.SetActive(false);
 	}
 
     void Update()
     {
-        //Game timer logic
-        gameTimer += Time.deltaTime;
-        float difficulty = Mathf.Min(gameTimer / gameDuration, 1.0f);
-
-        //Spawn Logic
-        spawnTimer -= Time.deltaTime;
-        if(spawnTimer <= 0.0f)
+        if (isPlaying)
         {
-            float spawnInterval = maximumSpawnInterval - (maximumSpawnInterval - minimumSpawnInterval) * difficulty;
-            spawnTimer = spawnInterval;
+            //Game timer logic
+            gameTimer += Time.deltaTime;
+            float difficulty = Mathf.Min(gameTimer / gameDuration, 1.0f);
 
-
-            Vector3 spawnPosition = navigableTiles[Random.Range(0, navigableTiles.Count)].transform.position;
-            GameObject crateInstance = Instantiate(cratePrefab, spawnPosition, Quaternion.identity, crateContainer.transform);
-
-            Destroy(crateInstance, crateLifeTime);
-        }
-        //Input Logic
-        if (Input.GetMouseButtonDown(0))
-        {
-            Vector3 screenPosition = Input.mousePosition;
-            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
-            RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
-            foreach(RaycastHit2D hit in hits)
+            timeText.text = string.Format("Time: {0}s", Mathf.CeilToInt(gameDuration - gameTimer));
+            //Spawn Logic
+            spawnTimer -= Time.deltaTime;
+            if (spawnTimer <= 0.0f)
             {
-                if(hit.collider.gameObject.GetComponent<NavTile>() != null)
-                {
-                    player.Move(aStar.FindPath(player.gameObject, hit.collider.gameObject));
+                float spawnInterval = maximumSpawnInterval - (maximumSpawnInterval - minimumSpawnInterval) * difficulty;
+                spawnTimer = spawnInterval;
 
-                    break;
+
+                Vector3 spawnPosition = navigableTiles[Random.Range(0, navigableTiles.Count)].transform.position;
+                GameObject crateInstance = Instantiate(cratePrefab, spawnPosition, Quaternion.identity, crateContainer.transform);
+
+                Destroy(crateInstance, crateLifeTime);
+            }
+            //Input Logic
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 screenPosition = Input.mousePosition;
+                Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+                RaycastHit2D[] hits = Physics2D.RaycastAll(worldPosition, Vector2.zero);
+                foreach (RaycastHit2D hit in hits)
+                {
+                    if (hit.collider.gameObject.GetComponent<NavTile>() != null)
+                    {
+                        player.Move(aStar.FindPath(player.gameObject, hit.collider.gameObject));
+
+                        break;
+                    }
                 }
             }
-          
+
+            //Check for Game Over
+            if(gameTimer > gameDuration && !isGameOver)
+            {
+                OnGameOver();
+            }
         }
     }
 
@@ -95,5 +118,31 @@ public class GameSceneController : MonoBehaviour {
     {
         Destroy(crate);
         Score++;
+    }
+
+    public void OnPlay()
+    {
+        startGroup.SetActive(false);
+        gameplayGroup.SetActive(true);
+        gameOverGroup.SetActive(false);
+
+        isPlaying = true;
+    }
+
+    private void OnGameOver()
+    {
+        startGroup.SetActive(false);
+        gameplayGroup.SetActive(false);
+        gameOverGroup.SetActive(true);
+
+        isGameOver = true;
+        isPlaying = false;
+
+        gameOverText.text = string.Format(gameOverText.text, score);
+    }
+
+    public void OnReplay()
+    {
+        SceneManager.LoadScene("Game");
     }
 }
