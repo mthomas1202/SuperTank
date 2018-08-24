@@ -14,6 +14,9 @@ public class GameSceneController : MonoBehaviour {
     public float minimumSpawnInterval = 0.5f;
     public float crateLifeTime = 10f;
 
+    [Header("Audio")]
+    public AudioSource collectSound;
+
     [Header("UI")]
     public GameObject startGroup;
     public GameObject gameplayGroup;
@@ -21,6 +24,8 @@ public class GameSceneController : MonoBehaviour {
     public Text scoreText;
     public Text gameOverText;
     public Text timeText;
+    public Text highScoreText;
+    public Text newHighScoreText;
 
     public GameObject cratePrefab;
     public GameObject crateContainer;
@@ -65,6 +70,9 @@ public class GameSceneController : MonoBehaviour {
         startGroup.SetActive(true);
         gameplayGroup.SetActive(false);
         gameOverGroup.SetActive(false);
+
+        int currentHighScore = PlayerPrefs.GetInt("highscore");
+        highScoreText.text = string.Format(highScoreText.text, currentHighScore);
 	}
 
     void Update()
@@ -118,6 +126,7 @@ public class GameSceneController : MonoBehaviour {
     {
         Destroy(crate);
         Score++;
+        collectSound.Play();
     }
 
     public void OnPlay()
@@ -139,6 +148,15 @@ public class GameSceneController : MonoBehaviour {
         isPlaying = false;
 
         gameOverText.text = string.Format(gameOverText.text, score);
+
+        //Save the High Score
+        newHighScoreText.gameObject.SetActive(false);
+        int currentHighScore = PlayerPrefs.GetInt("highscore");
+        if(score > currentHighScore)
+        {
+            PlayerPrefs.SetInt("highscore", score);
+            newHighScoreText.gameObject.SetActive(true);
+        }
     }
 
     public void OnReplay()
